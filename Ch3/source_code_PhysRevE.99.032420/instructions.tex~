@@ -1,0 +1,127 @@
+% Hilbertraumvektoren
+	\newcommand{\mean}[1]{\langle #1 \rangle}
+	\newcommand{\Mean}[1]{\left< #1 \right>}	
+% Silbentrennung für Wörter bei denen Latex es nicht selbst hinbekommt ...
+	%\selectlanguage{english}
+	%\hyphenation{}
+% math bold
+	\newcommand{\bb}[1]{\boldsymbol{#1}}
+% erect d in dx
+        \newcommand{\D}{\mathrm{d}}	
+% omega and Omega
+	\newcommand{\om}{\omega}
+	\newcommand{\Om}{\Omega}
+% cal. I for information
+	\newcommand{\I}{\mathcal{I}}
+% COMMENTS WITHIN TEXT
+\newcommand\worries[1]{\textcolor{red}{#1}}
+% erase comments
+%\renewcommand\worries[1]{\textcolor{red}{}}
+\newcommand\comm[1]{\textcolor{blue}{#1}}
+% erase comments
+%\renewcommand\comm[1]{\textcolor{blue}{}}
+%
+% POSSIBLY REMOVE
+\newcommand\remove[1]{\textcolor{Gray}{#1}}
+%
+\normalfont
+\newlength\mylength
+\setlength\mylength{.5em}%
+
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+\usepackage{enumerate}
+
+\begin{document}
+\title{Instructions to generate figures from the manuscript "Spikes convey more information about a signal if it alters the mean input current rather than variability in integrate-and-fire neurons"}
+\date{\vspace{-5ex}}
+\maketitle
+Here, we provide instructions on how the figures that are shown in the manuscript and supplemental information can be generated. We have included all necessary files in the folder "source\_code". The general procedure involves two steps: first, the data for all sampled parameters are created. Second, these data are used to create the respective figures. We used Python 2.7 and jupyter-notebooks for final figure generation.
+\section{Data generation}
+The scripts for data generation are to be found in the subfolder "generate\_data" and have to be run first before the figures can be created. All scripts automatically save the results as compressed numpy arrays.
+\subsection{generateAnalyticData.py}
+This script generates the analytic data from linear response theory (only LIF). It can be run (after changing to "generate\_data") by
+\begin{verbatim}
+python generateAnalyticData.py
+\end{verbatim}
+The variables defined in the script can be changed as desired and are:
+\begin{table}[h]
+%\centering
+\label{my-label}
+\begin{tabular}{ll}
+\verb!mu!  & constant current $\mu$\\
+\verb!snr!    & list of values of signal strength $\sigma_s$ to be sampled \\
+\verb!sigN_a!  & lists of values of noise strength $\sigma_n$\\
+\verb!tau_a! & list of values of signal correlation time $\tau_s$\\
+\verb!w0_a!  & list of values of central signal frequency $\Omega_0$\\
+\verb!n!       & the number of evaluated frequencies $\om$ between 0 and \verb!omega_end! \\
+
+\end{tabular}
+\end{table}
+
+\subsection{generateSimulationData.py}
+This script generates the simulation data. It can be run (after changing to "generate\_data") by
+\begin{verbatim}
+python generateSimulationData.py
+\end{verbatim}
+The variables defined in the script can be changed as desired and are:
+\begin{table}[h]
+%\centering
+\label{my-label}
+\begin{tabular}{ll}
+\verb!snr!    & list of values of $\sigma_s$ to be sampled \\
+\verb!tau_s! & list of values of $\tau_s$                 \\
+\verb!w0_s!  & list of values of $\Omega_0$               \\
+\verb!mu!  & list of values of $\mu$ (separate for LIF and EIF)\\
+\verb!tau_n!  & list of values of $\tau_n$ corresponding to each $\mu$\\
+\verb!sigN_s!  & list of lists of values of $\sigma_n$ corresponding to each $\mu$\\
+\verb!n!       & the number of trials to be generated on each core (we used 32 cores) \\
+\end{tabular}
+\end{table}
+
+\subsection{generateGaussianityTestData.py}
+This script generates the data and Gaussianity test results as shown in the supplemental material. It can be run (after changing to "generate\_data") by
+\begin{verbatim}
+python generateGaussianityTestData.py
+\end{verbatim}
+The variables defined in the script can be changed as desired and are:
+\begin{table}[h]
+%\centering
+\label{my-label}
+\begin{tabular}{ll}
+\verb!snr!    & value of $\sigma_s$ to be tested \\
+\verb!tau_s! & value of $\tau_s$                 \\
+\verb!w0_s!  & value of $\Omega_0$               \\
+\verb!mu!  & value of $\mu$\\
+\verb!tau_n!  & value of $\tau_n$\\
+\verb!sigN_s!  & value of $\sigma_n$\\
+\verb!n!       & the number of trials to be generated on each core (we used 32 cores) \\
+
+\end{tabular}
+\end{table}
+
+\subsection{generateFiringStatsData.py}
+This script generates the data that are used to determine the steady state firing statistics (no signal) as shown in the supplemental material. It can be run (after changing to "generate\_data") by
+\begin{verbatim}
+python generateFiringStatsData.py
+\end{verbatim}
+The variables defined in the script can be changed as desired and are:
+\begin{table}[h!]
+%\centering
+\label{my-label}
+\begin{tabular}{ll}
+\verb!tau_s! & value of $\tau_s$                 \\
+\verb!w0_s!  & value of $\Omega_0$               \\
+\verb!mu!  & value of $\mu$\\
+\verb!tau_n!  & value of $\tau_n$\\
+\verb!sigN_s!  & value of $\sigma_n$\\
+\verb!n!       & the number of trials to be generated on each core (we used 32 cores)
+\end{tabular}
+\end{table}
+
+\section{Figure generation}
+The folder "generate\_figures" contains two IPython notebooks in which the figures shown in the manuscript and supplemental material are created. In the notebook \verb!figsS789.ipynb! figures S7, S8, and S9 can be created, the notebook \verb!figsS12.ipynb! provides figures S1 and S2. All other figures are generated from \verb!figs.ipynb!.\\
+The notebooks should be run from top to bottom in order to avoid confusing data for LIF and EIF. The function of the cells in the notebook is indicated by the section names they belong to.\\
+The notebooks are designed to work for the data as generated for the manuscript. For changes in parameter ranges smaller modifications in the notebook may be necessary.
+
+\end{document}
