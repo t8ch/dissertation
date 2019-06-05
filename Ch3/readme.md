@@ -1,4 +1,4 @@
-# Readme for Ch2
+# Readme for Ch3
 
 All python code in this folder was written and run with python 2.7
 
