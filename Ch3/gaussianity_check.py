@@ -1,3 +1,9 @@
+###
+### checking normality, correlatedness, and multivariate Gaussianity (of spike trains)
+###
+
+
+
 from __future__ import division
 from pylab import *
 import fm
@@ -419,64 +425,3 @@ def merge_test_results(results):
                 fc[mod][uni_rep][part] = {}
                 fc[mod][uni_rep][part] = array([x[mod][uni_rep][part] for x in results])
     return fc
-            
-#####################
-################ FOR TESTING
-####################
-def normality_tests_TEST(R=.04, theta = 15., mu = 300., sigN = 300, tM = 10, Vres = 0, sigS = .25, tS = [20., 15.], tauN = 0, n = 100, N = 1e5, dt = .02, method = 1, ns = 1, model = 'LIF', DeltaT = 1.5, tref = 5., lim1 = 10000, lim2 = 300, rnd_seed = 444, verbose = 1, index = 0):
-    '''
-    multivariate normality tests
-    '''
-    from copy import deepcopy
-
-    r = random.Random(rnd_seed) # seed number is arbitrary 
-    if size(lim1) > 1:
-        freqs = r.sample(map(int,lim1), int(lim2) )
-    else:
-        freqs = r.sample(range(int(lim1)), int(lim2))
-    print(freqs)
-    
-    # # select lim2 random frequencies from the first lim1
-    # if size(lim1) > 1:
-    #     freqs = r.choice(map(int,lim1), int(lim2), replace = False, )
-    # else:
-    #     freqs = r.choice(int(lim1), int(lim2), replace = False)
-    # print(freqs)
-
-    placeholder = check_Gauss_uniques(R, theta, mu, sigN, tM, Vres, sigS, tS, tauN, n, N, dt, 1, ns, model, DeltaT, tref)[:,freqs,:]
-    un_raw = placeholder, placeholder
-    re_raw = placeholder, placeholder
-
-    def normality_test_on_array(data):
-        henze_score, henze_pvalue = multivariate_normality(data.T)[1:]
-        mardias1, mardias2,  = Mardias_test(data)[:2]
-        return henze_score, mardias1, mardias2, henze_pvalue #weird order but preserves previous order of first three
-
-    def generate_surrogate(data):
-        mu = data.mean(1, keepdims = 1)
-        sigma = data.std(1, keepdims = 1)
-        return np.random.normal(size = data.shape, loc = mu, scale = sigma)
-
-    data_placeholder = normality_test_on_array(placeholder[0])
-    fc = {}
-    for k_mod,mod in enumerate(['mm','vm']):
-        fc[mod] = {}
-        for k_uni_rep,uni_rep in enumerate(['uni', 'rep']):
-            fc[mod][uni_rep] = {}
-            for k_part,part in enumerate(['real','imag']):
-                fc[mod][uni_rep][part] = {}
-                
-                fc[mod][uni_rep][part] = data_placeholder #normality_test_on_array(array([[un_raw[0], re_raw[0]],[un_raw[1], re_raw[1]]])[k_mod,k_uni_rep,k_part])
-
-    fake_placeholder = normality_test_on_array(generate_surrogate(placeholder[0]))
-    #same for surrogate data
-    fc_sur  = deepcopy(fc)
-    for k_mod,mod in enumerate(['mm','vm']):
-        for k_uni_rep,uni_rep in enumerate(['uni', 'rep']):
-            for k_part,part in enumerate(['real','imag']):                
-                fc_sur[mod][uni_rep][part] = fake_placeholder# normality_test_on_array(generate_surrogate(array([[un_raw[0], re_raw[0]],[un_raw[1], re_raw[1]]])[k_mod,k_uni_rep,k_part]))
-
-    if verbose:
-        print('{} runs completed.'.format(index))
-    
-    return fc, fc_sur#{'coeff': [[un_raw[0], re_raw[0]],[un_raw[1], re_raw[1]]]} #MM/VM, uni/rep,real/imag,freq, trial

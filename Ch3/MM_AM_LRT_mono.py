@@ -1,3 +1,7 @@
+###
+### calculating correlation functions and information for MM and VM (simulation and analytic)
+###
+
 from pylab import *
 #from lif import *
 from hypergeometric import nu0, U, dU, d2U, C0, chiM, chiA, Sst, S_mono, MI

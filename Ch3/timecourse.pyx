@@ -2,6 +2,12 @@
 #### python setup.py build_ext --inplace
 ####
 
+
+###
+### computing voltage evolution and spike times for LIF and EIf neurons (implementation of solving differential equation for given input current via Euler forward)
+### implemented in cython for better performance
+###
+
 # cython: profile=True
 
 # coding: utf-8
@@ -245,67 +251,3 @@ cdef class EIF(object):
         stimes = np.diff(stimes)
         return stimes*fm.dt
 
-###
-### old and belongs to SimpleIF:
-###
-'''
-    def timecourse(self, np.ndarray current):
-        cdef np.ndarray voltage = np.empty(len(current))
-# initial condition
-        voltage[0] = self._Vinit
-        cdef double dt = fm.dt #fm.dt # step size integration
-        cdef int tfire = -1000
-        cdef double diff = 0
-# Eulers solver
-        cdef int i
-        cdef double dVdt
-        for i in range(1, len(current)):
-            if i==tfire+1:
-                voltage[i] = self._ures + diff
-            else:
-                dVdt =  (1/self._tau*(current[i-1]*self._R - voltage[i-1] + self._El))
-                voltage[i] = voltage[i-1] + dt*dVdt
-    # action potential threshold 
-                if voltage[i] >= self._Vthr:
-                    diff = voltage[i]-self._Vthr
-                    tfire = i
-                    voltage[i] = self._peak #spike
-        self._Vmem = voltage
-        return voltage    
-
-    def spiketrain(self, np.ndarray time_course):        
-        cdef np.ndarray st = np.array([1 if x == self._peak else 0 for x in time_course])
-        self._spiketrain = st
-        return st
-'''
-'''     
-    def spiketrain0(self, time_course):
-        st = np.array(time_course)//self._peak
-        self._spiketrain = st
-        return st
-'''
-   
-'''
-# coding: utf-8
-import numpy as np
-
-def timecourse(tau, R, Vthr, El, ures, current, peak):
-    voltage = np.empty(len(current))
-    # initial condition
-    voltage[0] = El
-    dt = fm.dt # step size integration
-    tfire = -e9
-    diff = 0
-    # Eulers solver
-    for i in range(1, len(current)):
-        if i==tfire+1:
-            voltage[i] = ures + diff
-        else:
-            voltage[i] = voltage[i-1] + dt*((1./tau*(current[i-1]*R - voltage[i-1] + El)))
-            # action potential threshold 
-            if voltage[i] >= Vthr:
-                diff = voltage[i]-Vthr
-                tfire = i
-                voltage[i] = peak #spike
-    return voltage
-'''

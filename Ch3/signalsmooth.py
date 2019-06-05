@@ -1,3 +1,7 @@
+###
+### smoothing time series with different windows
+###
+
 """
 cookb_signalsmooth.py
 

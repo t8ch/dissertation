@@ -1,3 +1,6 @@
+
+## generation of Gaussian processes with algorithm of Davies & Harte
+
 from pylab import *
 #from joblib import Parallel, delayed  
 #import multiprocessing
@@ -81,27 +84,4 @@ def sq_exp(tau, sig, w0, N, dt= .1):
     #auto = irfft(spec)/dt
     return p#, spec, ss, auto, var(p)
 
-'''
-#x = ifftshift(arange(-N,N))
-#y = exp(-(x+N/300)**2/20)
-#y_fft = fft(y)
-
-#print min(y_fft)
-x = arange(N/2)
-d = sqrt(N/(2*cosh(.001*(x-2000))))
-d = sqrt(N*exp(-.0002*(x-2000)**2)/2)
-e = r_[d[::-1],d]
-
-a1 = np.random.normal(0,1.,N)
-a2 = np.random.normal(0,1.,N)
-
-#b = e*(a1+1j*a2)
-b = e*(a1+1j*a2)
-#b = [sqrt(N*y_fft[x]/2.)*(a1[x]+a2[x]*1j) for x in range(int(N))]
-#b =  [sqrt(N/cosh(.01*x-400))*(a1[x]+a2[x]*1j) for x in range(int(N))]
-#b = [sqrt(N*exp(-.001*(x-N-200)**2)/2)*(a1[x]+a2[x]*1j) for x in range(int(N))]
-
-print min(b)
-b = fftshift(b)
 c = ifft(b)
-'''

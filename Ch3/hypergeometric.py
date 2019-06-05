@@ -1,3 +1,8 @@
+###
+### helper functions for analytic calculations in linear response theory
+###
+
+
 #from lif import *
 from pylab import *
 from mpmath import *
@@ -32,16 +37,6 @@ def CV(R_, theta_, mu_, sigN_, tauMe_, Vres_):
     c = diff(lambda l, R, Vth, mu, sigma, tauM, Vres:  exp(((Vres/R - mu)**2 - (Vth/R - mu)**2)/(2*sigma**2/tauM))*pcfd(-l*tauM, sqrt(2)/sigma*sqrt(tauM)*(mu - Vres/R))/pcfd(-l*tauM, sqrt(2)/sigma*sqrt(tauM)*(mu - Vth/R)), (0, R_,theta_, mu_, sigN_, tauMe_, Vres_), (2,0,0,0,0,0,0)) - 1/nu**2
     cv = sqrt(c)*nu
     return nu, cv
-'''
-def nu0(R, theta, mu, sigN, tauMe, Vres):
-    upper = (theta/R-mu)*sqrt(tauMe)/(sigN)
-    lower = (Vres/R-mu)*sqrt(tauMe)/(sigN)
-    integral = quad(lambda x: exp(x**2)*(1+erf(x)), [lower, upper], maxdegree = 7)#[0]
-    T = tauMe*sqrt(pi)*integral
-    if T == 0: 
-        return 0
-    else: return 1/T
-'''
 
 def S_oup(sigS, tauS, w):
     return (2*sigS**2*tauS)/(1+w**2*tauS**2)
@@ -73,29 +68,7 @@ def C0(R, theta, mu, sig, tauM, Vr, w):
     return nu0(R, theta, mu, sig, tauM, Vr)*(abs(dT)**2-exp(2*delta)*abs(dR)**2)/(abs(dT-exp(delta)*dR)**2)
 
 #USING U INSTEAD OF PARABOLIC CYLINDER
-'''
-def C0(R, theta, mu, sig, tauM, Vr, w):
-    y0 = sqrt(tauM)*(theta/R - mu)/sig
-    y1 = sqrt(tauM)*(Vr/R - mu)/sig
-    a = tauM*w*j/2.
-    b = 1/2.
-    return nu0(R, theta, mu, sig, tauM, Vr)*re((1+U(a,b,y1)/U(a,b,y0))/(1-U(a,b,y1)/U(a,b,y0)))
-    #return nu0(R, theta, mu, sig, tauM, Vr)*re((U(a,b,y0)+U(a,b,y1))/(U(a,b,y0)-U(a,b,y1)))
 
-def chiM2(R, theta, mu, sig, t, Vr, w):
-    y0 = sqrt(t)*(theta/R - mu)/sig
-    y1 = sqrt(t)*(Vr/R - mu)/sig
-    a = t*w*j/2.
-    b = 1/2.
-    return nu0(R, theta, mu, sig, t, Vr)*sqrt(t)/(sig*(1+j*w*t))*(dU(a,b,y0)-dU(a,b,y1))/(U(a,b,y0)-U(a,b,y1))
-
-def chiA2(R, theta, mu, sig, t, Vr, w):
-    y0 = sqrt(t)*(theta/R - mu)/sig
-    y1 = sqrt(t)*(Vr/R - mu)/sig
-    a = t*w*j/2.
-    b = 1/2.
-    return nu0(R, theta, mu, sig, t, Vr)/(2*sig**2*(2+j*w*t))*((d2U(a,b,y0)-d2U(a,b,y1))/(U(a,b,y0)-U(a,b,y1)))
-'''
 def chiM(R, theta, mu, sig, t, Vr, w):
     delta = (Vr**2 - theta**2 + 2*R*mu*(theta - Vr))/(2*R**2*sig**2/t)
     dR = pcfd(j*w*t, sqrt(2*t)*(mu - Vr/R)/sig)
@@ -103,10 +76,7 @@ def chiM(R, theta, mu, sig, t, Vr, w):
     dR1 = pcfd(j*w*t-1, sqrt(2*t)*(mu - Vr/R)/sig)
     dT1 = pcfd(j*w*t-1, sqrt(2*t)*(mu - theta/R)/sig)
     return nu0(R, theta, mu, sig, t, Vr)*j*w*t*sqrt(2*t)/(sig*(j*w*t-1))*((dT1 - exp(delta)*dR1)/(dT-exp(delta)*dR))
-'''
-def CcrossMM(R, theta, mu, sigN, tauM, Vr, sigS, tauS, w):  
-    return abs(chiM(R, theta, mu, sigN, tauM, Vr, w))**2*Sst(sigS, tauS, w)
-'''
+
 def chiA(R, theta, mu, sig, t, Vr, w):
     delta = (Vr**2 - theta**2 + 2*R*mu*(theta - Vr))/(2*R**2*sig**2/t)
     dR = pcfd(j*w*t, sqrt(2*t)*(mu - Vr/R)/sig)
@@ -114,13 +84,7 @@ def chiA(R, theta, mu, sig, t, Vr, w):
     dR2 = pcfd(j*w*t-2, sqrt(2*t)*(mu - Vr/R)/sig)
     dT2 = pcfd(j*w*t-2, sqrt(2*t)*(mu - theta/R)/sig)
     return nu0(R, theta, mu, sig, t, Vr)*j*w*t*(j*w*t-1)/(sig**2*(2-j*w*t))*((dT2 - exp(delta)*dR2)/(dT-exp(delta)*dR))
-'''
-def CcrossAM(R, theta, mu, sigN, tauM, Vr, sigS, tauS, w):  
-    return abs(chiA(R, theta, mu, sigN, tauM, Vr, w))**2*Sst(sigS*sigN**2, tauS, w)
 
-def CautoAM(R, theta, mu, sigN, tauM, Vr, sigS, tauS, w): 
-    return C0(R, theta, mu, sigN, tauM, Vr, w) +  abs(chiA(R, theta, mu, sigN, tauM, Vr, w))**2*Sst(sigS*sigN**2,tauS, w)
-'''
 def corr_combined(R, theta, mu, sigN, tauM, Vr, sigS, tauS, w, method = 0):
     if method == 0:
         g = CcrossMM

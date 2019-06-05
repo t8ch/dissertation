@@ -1,6 +1,7 @@
 from pylab import *
 import fm
 
+#computes autocorrelation function based on convolution theorem
 def auto_corr(a, c=1, d=1):
     co = np.zeros(int(fm.N2/2)+1)
     ft = np.fft.rfft(a)

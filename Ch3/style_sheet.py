@@ -1,3 +1,7 @@
+###
+### custom plot styles
+###
+
 from pylab import *
 import seaborn as sns
 
